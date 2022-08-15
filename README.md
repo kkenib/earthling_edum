@@ -1,8 +1,10 @@
 # earthling_edum
 
 ## 가상환경
-$ apt-get install python3-venv
+$ apt-get install python3-venv 
+
 $ python3 -m venv earthling_edum/
+
 $ source ./bin/activate
 
 ## 패키지 설치
