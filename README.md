@@ -7,7 +7,7 @@ $ source ./bin/activate <br>
 <br>
 
 ## 패키지 설치
-$ pip3 install -r requirements.txt
+$ pip3 install -r requirements.txt <br>
 <br>
 
 ## gRPC Protocol 생성
