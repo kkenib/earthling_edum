@@ -1,30 +1,45 @@
 import logging
-from concurrent import futures
-import grpc
-import EarthlingProtocol_pb2
-import EarthlingProtocol_pb2_grpc
+from Earthling import Earthling, serve, echo
+import threading, time, json
+from multiprocessing import Process
+from Worker import fork_worker
+ 
+server_ports = ["50053", "50054", "50055", "50056"]
+def loop():
+    global server_ports
+    while True:
+        try:
+            for server_port in server_ports:
+                result = echo("localhost", server_port, server_port)
+                result = json.loads(result)
+
+                is_working = result["Working"]
+                if not is_working:
+                    print(result["Response"], result["Working"])
+
+        except:
+            print("Can't connect remote...")
+            time.sleep(1)
+            pass    
+        time.sleep(3)
+
+def fork():
+    global server_ports
+    for server_port in server_ports:
+        print(server_port)
+        p = Process(target=fork_worker, args=(server_port, ))
+        p.start()
+
 
 serverPort = "50052"
-def run():
-    with grpc.insecure_channel("localhost:50051") as channel:
-        stub = EarthlingProtocol_pb2_grpc.EarthlingStub(channel)
-        response = stub.Echo(EarthlingProtocol_pb2.EchoRequest(message=serverPort))
-    print("Greeter client received: " + response.message)
-
-
-class Earthling(EarthlingProtocol_pb2_grpc.EarthlingServicer):
-    def Echo(self, request, context):
-        return EarthlingProtocol_pb2.EchoResponse(message='Hello, %s!' % request.name)
-
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    EarthlingProtocol_pb2_grpc.add_EarthlingServicer_to_server(Earthling(), server)
-    server.add_insecure_port('[::]:' + serverPort)
-    server.start()
-    server.wait_for_termination()
-
 if __name__ == '__main__':
     logging.basicConfig()
-    run()
+    echo("211.195.9.226", "50051", serverPort)
+
+    t = threading.Thread(target=loop, args=())
+    t.start()
+
+    fork()
+
     print("Started Server")
-    serve()
+    serve(serverPort, Earthling())
