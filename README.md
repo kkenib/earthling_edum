@@ -2,6 +2,7 @@
 
 ## 가상환경
 $ apt-get install python3-venv  <br>
+$ pip3 install --upgrade pip
 $ python3 -m venv earthling_edum/ <br>
 $ source ./bin/activate <br>
 <br>
